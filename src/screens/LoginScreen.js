@@ -1,0 +1,99 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { graphqlRequest } from '../services/graphql';
+import { saveServerConfig } from '../utils/storage';
+import Footer from '../components/Footer';
+
+export default function LoginScreen({ navigation }) {
+  const [serverUrl, setServerUrl] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const testAndLogin = async () => {
+    if (!serverUrl || !apiKey) {
+      Alert.alert('Error', 'Please enter Server URL and API Key');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Simple validation query
+      await graphqlRequest(
+        serverUrl,
+        apiKey,
+        `{ version { version } }`
+      );
+
+      await saveServerConfig(serverUrl, apiKey);
+      navigation.replace('Main');
+    } catch (err) {
+      Alert.alert('Connection Failed', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Connect to Stash</Text>
+
+        <TextInput
+          placeholder="http://10.0.0.100:9999"
+          value={serverUrl}
+          onChangeText={setServerUrl}
+          autoCapitalize="none"
+          style={styles.input}
+        />
+
+        <TextInput
+          placeholder="API Key"
+          value={apiKey}
+          onChangeText={setApiKey}
+          autoCapitalize="none"
+          secureTextEntry
+          style={styles.input}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={testAndLogin}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Connect</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <Footer />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'space-between' },
+  content: { padding: 24 },
+  title: { fontSize: 22, fontWeight: '600', marginBottom: 20 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  button: {
+    backgroundColor: '#000',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: { color: '#fff', fontSize: 16 },
+});
