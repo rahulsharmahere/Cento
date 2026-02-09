@@ -1,46 +1,105 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import ScreenLayout from '../components/ScreenLayout';
-import AppHeader from '../components/AppHeader';
-import { clearServerConfig } from '../utils/storage';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { useUpdate } from '../context/UpdateContext';
+import { trackEvent } from '../services/matomo';
 
-export default function SettingsScreen({ navigation }) {
-  const logout = async () => {
-    await clearServerConfig();
-    navigation.replace('Login');
+const SettingsScreen = ({ navigation }) => {
+  const { checkForUpdate } = useUpdate();
+
+  const handleCheckUpdate = () => {
+    // 📊 Matomo: user manually triggered update check
+    trackEvent('settings', 'check_update_clicked');
+
+    // Trigger update check (no force logic)
+    checkForUpdate();
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: () => {
+            // 📊 Matomo: logout
+            trackEvent('settings', 'logout_clicked');
+
+            navigation.replace('Login');
+          },
+        },
+      ]
+    );
   };
 
   return (
-    <ScreenLayout>
-      <AppHeader />
-      <View style={styles.body}>
-        <Text style={styles.title}>Settings</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Settings</Text>
 
-        <TouchableOpacity style={styles.button} onPress={logout}>
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    </ScreenLayout>
+      {/* Check for Update Button */}
+      <TouchableOpacity
+        style={styles.updateBtn}
+        onPress={handleCheckUpdate}
+      >
+        <Text style={styles.updateText}>Check for Update</Text>
+      </TouchableOpacity>
+
+      {/* Logout Button */}
+      <TouchableOpacity
+        style={styles.logoutBtn}
+        onPress={handleLogout}
+      >
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
+    </View>
   );
-}
+};
+
+export default SettingsScreen;
 
 const styles = StyleSheet.create({
-  body: {
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 40,
+  },
+
+  /* Update button */
+  updateBtn: {
     padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#000',
-    padding: 14,
-    borderRadius: 8,
+    borderRadius: 12,
+    backgroundColor: '#2563eb',
     alignItems: 'center',
   },
-  buttonText: {
+  updateText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: '600',
+  },
+
+  /* Logout button */
+  logoutBtn: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#7f1d1d',
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

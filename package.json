@@ -1,6 +1,6 @@
 {
   "name": "cento",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-clipboard/clipboard": "^1.16.3",
     "@react-native/new-app-screen": "0.83.1",
     "@react-navigation/bottom-tabs": "^7.12.0",
     "@react-navigation/native": "^7.1.28",
@@ -22,12 +23,16 @@
     "jsonwebtoken": "^9.0.3",
     "react": "19.2.0",
     "react-native": "0.83.1",
+    "react-native-device-info": "^15.0.1",
+    "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.20.0",
     "react-native-keychain": "^10.0.0",
+    "react-native-progress": "^5.0.1",
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.22.0",
     "react-native-vector-icons": "^10.3.0",
-    "react-native-video": "^6.19.0"
+    "react-native-video": "^6.19.0",
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
