@@ -13,8 +13,6 @@ It allows users to browse, explore, and play their Stash media library directly 
 - Play scene videos directly inside the app
 - Recent additions dashboard
 - Smooth navigation with bottom tabs
-- Offline-friendly UI with pagination
-- Built-in update checker (APK updates via GitHub Releases)
 
 ---
 
@@ -22,7 +20,7 @@ It allows users to browse, explore, and play their Stash media library directly 
 
 - **Android only**
 - Built using **React Native**
-- No Play Store dependency (APK distribution)
+- No Play Store dependency
 
 ---
 
@@ -43,10 +41,17 @@ When a new release is available, the app will notify you and allow you to downlo
 
 ## 🛡 Privacy
 
-- No analytics
-- No tracking
-- No data collection
-- All data stays between your device and your server
+Cento is privacy-first by design.
+
+- No third-party analytics (Google, Facebook, Mixpanel, etc.)
+- No trackers, or fingerprinting
+- Anonymous analytics used only for:
+  - App stability
+  - Update adoption
+  - Feature usage trends
+- No personal data is collected
+- All analytics data stays on your own server
+- No data is shared with external companies
 
 ---
 

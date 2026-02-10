@@ -1,7 +1,7 @@
 import DeviceInfo from 'react-native-device-info';
 import { Platform } from 'react-native';
 
-const MATOMO_URL = 'https://analytics.9rs.us/index.php';
+const MATOMO_URL = 'https://analytics.9rs.us/matomo.php';
 const SITE_ID = '1';
 
 let visitorId;
