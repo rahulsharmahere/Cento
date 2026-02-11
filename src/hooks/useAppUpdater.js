@@ -21,7 +21,7 @@ export default function useAppUpdater(currentVersion = "1.0.0") {
   const [apkUrl, setApkUrl] = useState(null);
   const [progress, setProgress] = useState(0);
 
-  // 🔍 Check for update (auto + manual)
+  // 🔍 Check for update
   const checkForUpdate = async () => {
     try {
       setIsChecking(true);
@@ -43,42 +43,39 @@ export default function useAppUpdater(currentVersion = "1.0.0") {
 
       console.log("📥 Found latest release:", latestRaw);
 
-      const apkAsset = release.assets?.find((a) =>
+      const apkAsset = release.assets?.find(a =>
         a.name.endsWith(".apk")
       );
 
-      if (!apkAsset) {
-        console.warn("⚠️ No APK asset found in release");
-      }
-
-      // ✅ Only show update if latest > current
       if (semver.gt(latestName, current)) {
         setUpdateAvailable(true);
         setLatestVersion(latestName);
 
-        // 📊 Analytics: update available
+        // 📊 analytics
         trackEvent("update", "available", latestName);
 
         if (apkAsset) {
           setApkUrl(apkAsset.browser_download_url);
-          console.log("✅ APK URL set:", apkAsset.browser_download_url);
         }
-      } else {
-        setUpdateAvailable(false);
-        console.log("👍 App is up to date.");
+
+        return true; // ✅ update found
       }
+
+      setUpdateAvailable(false);
+      console.log("👍 App is up to date.");
+      return false; // ✅ no update
     } catch (err) {
       console.error("❌ Update check failed:", err);
+      return null; // ❌ error
     } finally {
       setIsChecking(false);
     }
   };
 
-  // ⬇️ User clicked "Update"
+  // ⬇️ User clicked Update
   const onUpdateNow = async () => {
     if (!apkUrl) return;
 
-    // 📊 Analytics: download started
     trackEvent("update", "download_started", latestVersion);
 
     try {
@@ -89,28 +86,18 @@ export default function useAppUpdater(currentVersion = "1.0.0") {
         setProgress
       );
 
-      if (path === null) return; // cancelled
-      console.log("✅ APK saved at:", path);
+      if (path === null) return;
     } catch (err) {
-      if (err?.message === "cancelled") {
-        console.log("⏹️ Update cancelled");
-      } else {
-        console.error("❌ Update failed:", err?.message);
-      }
+      console.error("❌ Update failed:", err?.message);
     }
   };
 
-  // ❌ User cancelled download
+  // ❌ Cancel download
   const onCancelDownload = () => {
-    // 📊 Analytics: download cancelled
     trackEvent("update", "download_cancelled", latestVersion);
-
-    console.log("⏹️ Cancel download requested");
     try {
       cancelDownload();
-    } catch (e) {
-      console.error("❌ Cancel failed:", e);
-    }
+    } catch {}
     setProgress(0);
   };
 

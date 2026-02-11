@@ -41,17 +41,17 @@ When a new release is available, the app will notify you and allow you to downlo
 
 ## 🛡 Privacy
 
-Cento is privacy-first by design.
+Cento uses privacy-respecting analytics.
 
-- No third-party analytics (Google, Facebook, Mixpanel, etc.)
-- No trackers, or fingerprinting
-- Anonymous analytics used only for:
-  - App stability
-  - Update adoption
-  - Feature usage trends
-- No personal data is collected
-- All analytics data stays on your own server
-- No data is shared with external companies
+- Anonymous, app-scoped identifier (random GUID)
+- No hardware/device identifiers
+- No fingerprinting techniques
+- No cross-app tracking
+- No Advertising ID usage
+- Analytics reset on reinstall
+- No personal data collected
+- All analytics data stays on our own server
+
 
 ---
 

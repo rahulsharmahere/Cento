@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Alert } from "react-native";
 import useAppUpdater from "../hooks/useAppUpdater";
 import { version as appVersion } from "../../package.json";
 import { cancelDownload } from "../utils/downloadAndInstallApk";
@@ -17,9 +18,10 @@ export const UpdateProvider = ({ children }) => {
 
   const [visible, setVisible] = useState(false);
 
-  // 🔥 AUTO CHECK ON APP START
+  // 🔥 AUTO CHECK ON APP START (silent)
   useEffect(() => {
     checkForUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Show modal when update is found
@@ -28,6 +30,31 @@ export const UpdateProvider = ({ children }) => {
       setVisible(true);
     }
   }, [updateAvailable]);
+
+  // 👇 MANUAL CHECK (Settings button uses this)
+  const manualCheckForUpdate = async () => {
+  const result = await checkForUpdate();
+
+  if (result === true) {
+    // 🔥 Force-open modal on manual check
+    setVisible(true);
+    return;
+  }
+
+  if (result === false) {
+    Alert.alert(
+      "You’re up to date ✅",
+      `You are already using the latest version (${appVersion})`
+    );
+  }
+
+  if (result === null) {
+    Alert.alert(
+      "Update check failed",
+      "Please try again later."
+    );
+  }
+};
 
   const onLater = () => setVisible(false);
 
@@ -44,7 +71,11 @@ export const UpdateProvider = ({ children }) => {
         visible,
         onUpdateNow,
         progress,
-        checkForUpdate,
+
+        // expose BOTH
+        checkForUpdate,        // internal / auto
+        manualCheckForUpdate, // Settings button
+
         onLater,
         onCancel,
       }}

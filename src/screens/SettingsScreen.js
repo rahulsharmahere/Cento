@@ -10,14 +10,11 @@ import { useUpdate } from '../context/UpdateContext';
 import { trackEvent } from '../services/matomo';
 
 const SettingsScreen = ({ navigation }) => {
-  const { checkForUpdate } = useUpdate();
+  const { manualCheckForUpdate } = useUpdate();
 
   const handleCheckUpdate = () => {
-    // 📊 Matomo: user manually triggered update check
     trackEvent('settings', 'check_update_clicked');
-
-    // Trigger update check (no force logic)
-    checkForUpdate();
+    manualCheckForUpdate();
   };
 
   const handleLogout = () => {
@@ -30,9 +27,7 @@ const SettingsScreen = ({ navigation }) => {
           text: 'Logout',
           style: 'destructive',
           onPress: () => {
-            // 📊 Matomo: logout
             trackEvent('settings', 'logout_clicked');
-
             navigation.replace('Login');
           },
         },
@@ -44,7 +39,6 @@ const SettingsScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.header}>Settings</Text>
 
-      {/* Check for Update Button */}
       <TouchableOpacity
         style={styles.updateBtn}
         onPress={handleCheckUpdate}
@@ -52,7 +46,6 @@ const SettingsScreen = ({ navigation }) => {
         <Text style={styles.updateText}>Check for Update</Text>
       </TouchableOpacity>
 
-      {/* Logout Button */}
       <TouchableOpacity
         style={styles.logoutBtn}
         onPress={handleLogout}
@@ -75,8 +68,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 40,
   },
-
-  /* Update button */
   updateBtn: {
     padding: 16,
     borderRadius: 12,
@@ -88,8 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-
-  /* Logout button */
   logoutBtn: {
     marginTop: 20,
     padding: 16,
