@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   FlatList,
   Text,
-  TouchableOpacity,
+ TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
   Alert,
+  TextInput,
 } from 'react-native';
 
 import ScreenLayout from '../components/ScreenLayout';
@@ -17,12 +18,12 @@ import { graphqlRequest } from '../services/graphql';
 import { getServerConfig } from '../utils/storage';
 import { GET_PERFORMERS_PAGE } from '../graphql/performers';
 
-export default function PerformersScreen() {
+export default function PerformersScreen({ navigation }) {
   const [performers, setPerformers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     loadPage(1);
@@ -53,55 +54,85 @@ export default function PerformersScreen() {
 
   const totalPages = Math.ceil(totalCount / 20);
 
+  // 🔍 Performer search (fast & memoized)
+  const filteredPerformers = useMemo(() => {
+    if (!search.trim()) return performers;
+
+    const q = search.toLowerCase();
+
+    return performers.filter(p =>
+      p.name.toLowerCase().includes(q)
+    );
+  }, [search, performers]);
+
+  const renderPerformer = ({ item }) => (
+    <TouchableOpacity
+      style={styles.cardWrapper}
+      activeOpacity={0.85}
+      onPress={() =>
+        navigation.navigate('Performer', { performer: item })
+      }
+    >
+      <PerformerCard performer={item} />
+    </TouchableOpacity>
+  );
+
   return (
     <ScreenLayout>
       <AppHeader title="Performers" showBack />
 
+      {/* ✅ Search Bar */}
+      <TextInput
+        style={styles.search}
+        placeholder="Search performers..."
+        placeholderTextColor="#94a3b8"
+        value={search}
+        onChangeText={setSearch}
+      />
+
       {loading ? (
         <ActivityIndicator style={{ marginTop: 40 }} />
       ) : (
-        <>
-          <FlatList
-  data={performers}
-  keyExtractor={(item) => item.id}
-  numColumns={2}
-  columnWrapperStyle={styles.row}
-  contentContainerStyle={styles.list}
-  renderItem={({ item }) => (
-    <PerformerCard performer={item} />
-  )}
-  ListFooterComponent={
-    <View style={styles.pagination}>
-      <TouchableOpacity
-        style={[
-          styles.button,
-          page === 1 && styles.disabledButton,
-        ]}
-        disabled={page === 1}
-        onPress={() => loadPage(page - 1)}
-      >
-        <Text style={styles.buttonText}>◀ Previous</Text>
-      </TouchableOpacity>
+        <FlatList
+          data={filteredPerformers}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.list}
+          renderItem={renderPerformer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={styles.empty}>No performers found</Text>
+          }
+          ListFooterComponent={
+            <View style={styles.pagination}>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  page === 1 && styles.disabledButton,
+                ]}
+                disabled={page === 1}
+                onPress={() => loadPage(page - 1)}
+              >
+                <Text style={styles.buttonText}>◀ Previous</Text>
+              </TouchableOpacity>
 
-      <Text style={styles.pageText}>
-        Page {page} {totalPages ? `of ${totalPages}` : ''}
-      </Text>
+              <Text style={styles.pageText}>
+                Page {page} {totalPages ? `of ${totalPages}` : ''}
+              </Text>
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          page >= totalPages && styles.disabledButton,
-        ]}
-        disabled={page >= totalPages}
-        onPress={() => loadPage(page + 1)}
-      >
-        <Text style={styles.buttonText}>Next ▶</Text>
-      </TouchableOpacity>
-    </View>
-  }
-/>
-
-        </>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  page >= totalPages && styles.disabledButton,
+                ]}
+                disabled={page >= totalPages}
+                onPress={() => loadPage(page + 1)}
+              >
+                <Text style={styles.buttonText}>Next ▶</Text>
+              </TouchableOpacity>
+            </View>
+          }
+        />
       )}
     </ScreenLayout>
   );
@@ -109,36 +140,64 @@ export default function PerformersScreen() {
 
 const styles = StyleSheet.create({
   list: {
-    paddingHorizontal: 12,
-    paddingTop: 10,
+    paddingHorizontal: 10,   // ✅ Symmetric margins
+    paddingTop: 12,
+    paddingBottom: 30,
   },
-  row: {
-    justifyContent: 'space-between',
+
+  // ✅ PERFECTLY EVEN GRID
+  cardWrapper: {
+    flex: 1,
+    marginHorizontal: 6,     // ✅ Equal gutters
+    marginBottom: 14,
   },
+
+  /* Search */
+  search: {
+    marginHorizontal: 12,
+    marginTop: 10,
+    marginBottom: 6,
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: '#fff',
+  },
+
   pagination: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderColor: '#eee',
-  },
-  button: {
-    paddingVertical: 6,
+    marginTop: 10,
     paddingHorizontal: 12,
-    backgroundColor: '#000',
-    borderRadius: 6,
+    paddingVertical: 10,
   },
+
+  button: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    backgroundColor: '#0f172a',
+    borderRadius: 8,
+  },
+
   disabledButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#cbd5f5',
   },
+
   buttonText: {
     color: '#fff',
     fontSize: 13,
+    fontWeight: '500',
   },
+
   pageText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+
+  empty: {
+    textAlign: 'center',
+    marginTop: 40,
+    color: '#94a3b8',
   },
 });

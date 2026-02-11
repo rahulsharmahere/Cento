@@ -7,6 +7,7 @@ import MainTabs from './MainTabs';
 import SceneDetailScreen from '../screens/SceneDetailScreen';
 
 
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -16,6 +17,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Main" component={MainTabs} />
       <Stack.Screen name="SceneDetail" component={SceneDetailScreen} />
+
 
 
     </Stack.Navigator>
