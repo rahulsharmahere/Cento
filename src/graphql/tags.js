@@ -1,15 +1,17 @@
-export const GET_TAGS_PAGE = (page = 1, perPage = 25) => `
+export const GET_TAGS_PAGE = (page = 1) => `
 {
   findTags(
     filter: {
+      per_page: 50
       page: ${page}
-      per_page: ${perPage}
     }
   ) {
     count
+
     tags {
       id
       name
+      scene_count
     }
   }
 }

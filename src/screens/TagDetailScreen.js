@@ -22,6 +22,7 @@ export default function TagDetailScreen({ route, navigation }) {
   const { tag } = route.params;
 
   const [details, setDetails] = useState(null);
+  const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
@@ -30,29 +31,30 @@ export default function TagDetailScreen({ route, navigation }) {
   }, []);
 
   const loadTag = async () => {
-  try {
-    const { serverUrl, apiKey } = await getServerConfig();
+    try {
+      const serverConfig = await getServerConfig();
+      setConfig(serverConfig);
 
-    const data = await graphqlRequest(
-      serverUrl,
-      apiKey,
-      GET_TAG_SCENES(tag.id)
-    );
+      const data = await graphqlRequest(
+        serverConfig.serverUrl,
+        serverConfig.apiKey,
+        GET_TAG_SCENES(tag.id)
+      );
 
-    console.log("TAG SCENES:", data);
+      console.log('🔥 TAG SCENES:', data);
 
-    setDetails({
-      name: tag.name,
-      scenes: data.findScenes?.scenes || [],
-    });
+      setDetails({
+        name: tag.name,
+        scenes: data.findScenes?.scenes || [],
+      });
 
-  } catch (err) {
-    console.error(err);
-    Alert.alert('Error', 'Failed to load tag');
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', 'Failed to load tag');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredScenes = useMemo(() => {
     if (!details?.scenes) return [];
@@ -67,19 +69,14 @@ export default function TagDetailScreen({ route, navigation }) {
     );
   }, [search, details]);
 
-  if (loading) {
+  if (loading || !config) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  if (!details) {
-    return (
-      <View style={styles.loader}>
-        <Text>Failed to load tag</Text>
-      </View>
+      <ScreenLayout>
+        <AppHeader title={tag.name} showBack />
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#7c3aed" />
+        </View>
+      </ScreenLayout>
     );
   }
 
@@ -87,25 +84,35 @@ export default function TagDetailScreen({ route, navigation }) {
     <ScreenLayout>
       <AppHeader title={details.name} showBack />
 
-      <TextInput
-        style={styles.search}
-        placeholder="Search scenes..."
-        value={search}
-        onChangeText={setSearch}
-      />
+      {/* 🔥 SEARCH BAR */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search scenes..."
+          placeholderTextColor="#71717a"
+          style={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
+        />
+      </View>
 
       <FlatList
         data={filteredScenes}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.list}
+
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.sceneCard}
+            activeOpacity={0.85}
             onPress={() =>
               navigation.navigate('SceneDetail', { sceneId: item.id })
             }
           >
+            {/* ✅ RELIABLE SCREENSHOT */}
             <Image
-              source={{ uri: item.paths?.screenshot }}
+              source={{
+                uri: `${config.serverUrl}/scene/${item.id}/screenshot?apikey=${config.apiKey}`,
+              }}
               style={styles.thumb}
             />
 
@@ -115,13 +122,18 @@ export default function TagDetailScreen({ route, navigation }) {
               </Text>
 
               <Text style={styles.studio}>
-                {item.studio?.name}
+                {item.studio?.name || 'Unknown Studio'}
               </Text>
             </View>
           </TouchableOpacity>
         )}
+
         ListEmptyComponent={
-          <Text style={styles.empty}>No scenes found</Text>
+          <View style={styles.loader}>
+            <Text style={styles.empty}>
+              No scenes found 😌
+            </Text>
+          </View>
         }
       />
     </ScreenLayout>
@@ -129,47 +141,67 @@ export default function TagDetailScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  search: {
-    margin: 12,
-    backgroundColor: '#eee',
-    borderRadius: 10,
+  list: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingBottom: 30,
+  },
+
+  searchContainer: {
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+
+  searchInput: {
+    height: 42,
+    borderRadius: 12,
+
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+
+    paddingHorizontal: 14,
+    color: '#ffffff',
   },
 
   sceneCard: {
     flexDirection: 'row',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
+    marginBottom: 12,
+
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 14,
+    overflow: 'hidden',
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
 
   thumb: {
-    width: 110,
-    height: 70,
-    borderRadius: 6,
+    width: 120,
+    height: 80,
+    backgroundColor: '#222',
   },
 
   sceneInfo: {
     flex: 1,
-    marginLeft: 10,
+    paddingHorizontal: 12,
     justifyContent: 'center',
   },
 
   title: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 
   studio: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 11,
+    color: '#a1a1aa',
     marginTop: 4,
   },
 
   empty: {
-    textAlign: 'center',
-    marginTop: 40,
+    color: '#71717a',
+    fontSize: 14,
   },
 
   loader: {

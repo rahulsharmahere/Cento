@@ -55,6 +55,14 @@ Cento uses privacy-respecting analytics.
 
 ---
 
+## Screenshots
+
+![App Screenshot](assets/screenshot-1.png)
+
+![App Screenshot](assets/screenshot-2.png)
+
+---
+
 ## 📄 License
 
 This project is licensed under the **MIT License**.

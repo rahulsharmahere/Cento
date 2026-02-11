@@ -15,6 +15,7 @@ import HorizontalSection from '../components/HorizontalSection';
 import SceneCard from '../components/SceneCard';
 import StudioCard from '../components/StudioCard';
 import PerformerCard from '../components/PerformerCard';
+import StatsCard from '../components/StatsCard';
 
 import { graphqlRequest } from '../services/graphql';
 import { getServerConfig } from '../utils/storage';
@@ -22,7 +23,8 @@ import { getServerConfig } from '../utils/storage';
 import { GET_RECENT_SCENES } from '../graphql/scenes';
 import { GET_RECENT_STUDIOS } from '../graphql/studios';
 import { GET_RECENT_PERFORMERS } from '../graphql/performers';
-import { GET_TAGS_PAGE } from '../graphql/tags';   // ✅ ADD
+import { GET_TAGS_PAGE } from '../graphql/tags';
+import { GET_STATS } from '../graphql/stats';
 
 const CARD_WIDTH = Math.round(Dimensions.get('window').width * 0.65);
 
@@ -30,7 +32,8 @@ export default function HomeScreen({ navigation }) {
   const [scenes, setScenes] = useState([]);
   const [studios, setStudios] = useState([]);
   const [performers, setPerformers] = useState([]);
-  const [tags, setTags] = useState([]);          // ✅ ADD
+  const [tags, setTags] = useState([]);
+  const [stats, setStats] = useState(null);
   const [config, setConfig] = useState(null);
 
   useEffect(() => {
@@ -47,6 +50,14 @@ export default function HomeScreen({ navigation }) {
       }
 
       setConfig(serverConfig);
+
+      const statsRes = await graphqlRequest(
+        serverConfig.serverUrl,
+        serverConfig.apiKey,
+        GET_STATS
+      );
+
+      setStats(statsRes);
 
       const scenesRes = await graphqlRequest(
         serverConfig.serverUrl,
@@ -66,16 +77,16 @@ export default function HomeScreen({ navigation }) {
         GET_RECENT_PERFORMERS()
       );
 
-      const tagsRes = await graphqlRequest(        // ✅ ADD
+      const tagsRes = await graphqlRequest(
         serverConfig.serverUrl,
         serverConfig.apiKey,
-        GET_TAGS_PAGE(1, 25)
+        GET_TAGS_PAGE(1, '')
       );
 
       setScenes(scenesRes.findScenes?.scenes || []);
       setStudios(studiosRes.findStudios?.studios || []);
       setPerformers(performersRes.findPerformers?.performers || []);
-      setTags(tagsRes.findTags?.tags || []);       // ✅ ADD
+      setTags(tagsRes.findTags?.tags?.slice(0, 25) || []);
 
     } catch (err) {
       Alert.alert('Error', err.message || 'Failed to load dashboard');
@@ -90,12 +101,43 @@ export default function HomeScreen({ navigation }) {
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* ✅ Scenes */}
+        {stats && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.statsRow}
+          >
+            <StatsCard
+              label="Studios"
+              count={stats.findStudios?.count || 0}
+              icon="business"
+            />
+
+            <StatsCard
+              label="Performers"
+              count={stats.findPerformers?.count || 0}
+              icon="people"
+            />
+
+            <StatsCard
+              label="Scenes"
+              count={stats.findScenes?.count || 0}
+              icon="movie"
+            />
+
+            <StatsCard
+              label="Tags"
+              count={stats.findTags?.count || 0}
+              icon="local-offer"
+            />
+          </ScrollView>
+        )}
+
         <HorizontalSection
           title="Recently Added Scenes"
           data={scenes}
           renderItem={({ item }) => (
-            <View style={styles.sceneWrapper}>   {/* ✅ SPACING FIX */}
+            <View style={styles.sceneWrapper}>
               <SceneCard
                 scene={item}
                 imageUrl={`${config.serverUrl}/scene/${item.id}/screenshot?apikey=${config.apiKey}`}
@@ -109,7 +151,6 @@ export default function HomeScreen({ navigation }) {
           onViewAll={() => navigation.navigate('Scenes')}
         />
 
-        {/* ✅ Studios */}
         <HorizontalSection
           title="Recently Added Studios"
           data={studios}
@@ -119,7 +160,6 @@ export default function HomeScreen({ navigation }) {
           onViewAll={() => navigation.navigate('Studios')}
         />
 
-        {/* ✅ Performers (NOW CLICKABLE) */}
         <HorizontalSection
           title="Recently Added Performers"
           data={performers}
@@ -136,7 +176,6 @@ export default function HomeScreen({ navigation }) {
           onViewAll={() => navigation.navigate('Performers')}
         />
 
-        {/* ✅ Tags Section */}
         <View style={styles.tagsSection}>
 
           <View style={styles.tagsHeader}>
@@ -170,32 +209,42 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
 
+  statsRow: {
+    paddingHorizontal: 12,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+
   sceneWrapper: {
-    marginRight: 12,    // ✅ SCENE SPACING FIX
+    marginRight: 14,
   },
 
   tagsSection: {
-    paddingHorizontal: 16,
-    marginTop: 10,
-    marginBottom: 30,
+    paddingHorizontal: 12,
+    marginTop: 20,
+    marginBottom: 40,
   },
 
   tagsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 16,
   },
 
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 2,  
+    textShadowColor: 'rgba(0,0,0,0.6)',   // ✅ cinematic clarity trick
+    textShadowRadius: 6,
   },
 
   viewAll: {
     fontSize: 13,
-    fontWeight: '500',
-    color: '#2563eb',
+    fontWeight: '600',
+    color: '#7c3aed',
   },
 
   tagsContainer: {
@@ -204,16 +253,20 @@ const styles = StyleSheet.create({
   },
 
   tagPill: {
-    backgroundColor: '#eee',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginRight: 8,
-    marginBottom: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginRight: 10,
+    marginBottom: 10,
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
 
   tagText: {
     fontSize: 12,
     fontWeight: '500',
+    color: '#e4e4e7',
   },
 });

@@ -12,10 +12,6 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
-function TabBarIcon({ name, color, size }) {
-  return <Icon name={name} size={size} color={color} />;
-}
-
 export default function MainTabs() {
   const insets = useSafeAreaInsets();
 
@@ -23,13 +19,24 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#000',
-        tabBarInactiveTintColor: '#888',
+        tabBarShowLabel: true,   // ✅ ensure labels enabled
+
+  tabBarActiveTintColor: '#7c3aed',     // 💜 Active Purple
+  tabBarInactiveTintColor: '#a1a1aa',   // ✅ Visible Cinematic Grey
+
+
         tabBarStyle: {
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom,
+
+          backgroundColor: 'rgba(20,20,30,0.95)',   // ✨ Glass cinematic surface
+          borderTopWidth: 1,
+          borderColor: 'rgba(255,255,255,0.06)',
+
+          elevation: 0,   // Removes ugly Android shadow
         },
-        tabBarIcon: ({ color, size }) => {
+
+        tabBarIcon: ({ focused }) => {
           let iconName = 'dashboard';
 
           switch (route.name) {
@@ -53,12 +60,17 @@ export default function MainTabs() {
               break;
           }
 
-          return <TabBarIcon name={iconName} color={color} size={size} />;
+          return (
+            <Icon
+              name={iconName}
+              size={24}
+              color={focused ? '#7c3aed' : '#71717a'}   // 💜 Purple active glow
+            />
+          );
         },
       })}
     >
 
-      {/* ✅ Home Stack */}
       <Tab.Screen
         name="Home"
         component={HomeStack}
@@ -73,14 +85,10 @@ export default function MainTabs() {
         })}
       />
 
-      {/* ✅ Scenes Stack */}
       <Tab.Screen name="Scenes" component={ScenesStack} />
-
-      {/* ✅ Standalone */}
       <Tab.Screen name="Images" component={ImagesScreen} />
       <Tab.Screen name="Studios" component={StudiosScreen} />
 
-      {/* ✅ FIXED → Tags now uses HomeStack */}
       <Tab.Screen
         name="Tags"
         component={HomeStack}
@@ -95,7 +103,6 @@ export default function MainTabs() {
         })}
       />
 
-      {/* ✅ Settings */}
       <Tab.Screen name="Settings" component={SettingsScreen} />
 
     </Tab.Navigator>

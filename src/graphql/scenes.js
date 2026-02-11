@@ -17,10 +17,17 @@ export const GET_RECENT_SCENES = () => `
 }
 `;
 
-// 🔹 Paginated scenes list (Scenes tab)
-export const GET_SCENES_PAGE = (page = 1) => `
+// 🔹 Paginated scenes list (Scenes tab + Search)
+export const GET_SCENES_PAGE = (page = 1, search = '') => `
 {
   findScenes(
+    scene_filter: {
+      title: {
+        value: "${search}"
+        modifier: INCLUDES
+      }
+    }
+
     filter: {
       sort: "created_at"
       direction: DESC

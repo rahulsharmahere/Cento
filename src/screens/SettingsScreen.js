@@ -6,6 +6,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+
+import ScreenLayout from '../components/ScreenLayout';
+import AppHeader from '../components/AppHeader';
+
 import { useUpdate } from '../context/UpdateContext';
 import { trackEvent } from '../services/matomo';
 
@@ -36,59 +40,80 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Settings</Text>
+    <ScreenLayout>
+      <AppHeader title="Settings" />
 
-      <TouchableOpacity
-        style={styles.updateBtn}
-        onPress={handleCheckUpdate}
-      >
-        <Text style={styles.updateText}>Check for Update</Text>
-      </TouchableOpacity>
+      <View style={styles.container}>
 
-      <TouchableOpacity
-        style={styles.logoutBtn}
-        onPress={handleLogout}
-      >
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+        {/* 🔥 Update Card */}
+        <TouchableOpacity
+          style={styles.glassCard}
+          activeOpacity={0.85}
+          onPress={handleCheckUpdate}
+        >
+          <Text style={styles.cardTitle}>App Updates</Text>
+          <Text style={styles.cardSubtitle}>
+            Check for new versions
+          </Text>
+        </TouchableOpacity>
+
+        {/* 🔥 Logout Card */}
+        <TouchableOpacity
+          style={[styles.glassCard, styles.logoutCard]}
+          activeOpacity={0.85}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutTitle}>Logout</Text>
+          <Text style={styles.cardSubtitle}>
+            Sign out from Cento
+          </Text>
+        </TouchableOpacity>
+
+      </View>
+    </ScreenLayout>
   );
 };
 
 export default SettingsScreen;
 
 const styles = StyleSheet.create({
+
   container: {
-    flex: 1,
-    padding: 20,
+    paddingHorizontal: 14,
+    paddingTop: 10,
   },
-  header: {
-    fontSize: 26,
-    fontWeight: '700',
-    marginBottom: 40,
-  },
-  updateBtn: {
+
+  glassCard: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 16,
     padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#2563eb',
-    alignItems: 'center',
+    marginBottom: 12,
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
-  updateText: {
-    color: '#fff',
-    fontSize: 16,
+
+  logoutCard: {
+    marginTop: 6,
+    backgroundColor: 'rgba(127,29,29,0.35)',   // subtle destructive tone
+    borderColor: 'rgba(255,80,80,0.25)',
+  },
+
+  cardTitle: {
+    fontSize: 15,
     fontWeight: '600',
+    color: '#ffffff',
   },
-  logoutBtn: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#7f1d1d',
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
+
+  logoutTitle: {
+    fontSize: 15,
     fontWeight: '600',
+    color: '#fca5a5',   // cinematic red highlight
+  },
+
+  cardSubtitle: {
+    fontSize: 12,
+    color: '#a1a1aa',
+    marginTop: 4,
   },
 });

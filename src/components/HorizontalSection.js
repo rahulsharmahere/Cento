@@ -46,7 +46,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
+  fontWeight: '600',
+  color: '#ffffff',
+
+  textShadowColor: 'rgba(0,0,0,0.6)',   // 🔥 Cinematic clarity
+  textShadowRadius: 6,
   },
   viewAll: {
     fontSize: 14,

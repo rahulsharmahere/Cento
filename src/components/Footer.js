@@ -19,17 +19,22 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   footer: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     alignItems: 'center',
+
+    backgroundColor: 'rgba(20,20,30,0.95)',
     borderTopWidth: 1,
-    borderColor: '#e5e5e5',
+    borderColor: 'rgba(255,255,255,0.05)',
   },
+
   text: {
     fontSize: 12,
-    color: '#555',
+    color: '#a1a1aa',     // ✅ Proper cinematic grey
+    fontWeight: '400',
   },
+
   link: {
-    color: '#000',
+    color: '#7c3aed',
     fontWeight: '600',
   },
 });

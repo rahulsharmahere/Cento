@@ -20,9 +20,16 @@ export default function PerformerCard({ performer }) {
         style={styles.image}
         resizeMode="cover"
       />
-      <Text numberOfLines={1} style={styles.name}>
-        {performer.name}
-      </Text>
+
+      {/* 🎬 Cinematic Overlay */}
+      <View style={styles.overlay} />
+
+      {/* 🎬 Floating Performer Name */}
+      <View style={styles.textContainer}>
+        <Text numberOfLines={1} style={styles.name}>
+          {performer.name}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -30,19 +37,45 @@ export default function PerformerCard({ performer }) {
 const styles = StyleSheet.create({
   card: {
     width: 120,
+    height: 165,
+
+    borderRadius: 16,
+    overflow: 'hidden',              // ✅ Critical
     marginRight: 12,
-    alignItems: 'center',
+
+    backgroundColor: '#15151d',      // Cinematic fallback
   },
+
   image: {
-    width: 120,
-    height: 160,
-    borderRadius: 10,
-    backgroundColor: '#ccc',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#222',
   },
+
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 45,
+
+    backgroundColor: 'rgba(0,0,0,0.55)',   // 🎬 Cinematic fade
+  },
+
+  textContainer: {
+    position: 'absolute',
+    bottom: 8,
+    left: 6,
+    right: 6,
+  },
+
   name: {
-    marginTop: 6,
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#ffffff',
     textAlign: 'center',
+
+    textShadowColor: 'rgba(0,0,0,0.85)',   // 🔥 Premium readability trick
+    textShadowRadius: 6,
   },
 });

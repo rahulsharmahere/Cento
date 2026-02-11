@@ -20,7 +20,7 @@ import { GET_TAGS_PAGE } from '../graphql/tags';
 const PAGE_SIZE = 50;
 
 export default function TagsScreen({ navigation }) {
-  const [allTags, setAllTags] = useState([]);   // ✅ CACHE
+  const [allTags, setAllTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -35,7 +35,6 @@ export default function TagsScreen({ navigation }) {
 
       const { serverUrl, apiKey } = await getServerConfig();
 
-      // ✅ Fetch MULTIPLE pages automatically
       let pageToLoad = 1;
       let fetched = [];
       let hasMore = true;
@@ -59,10 +58,11 @@ export default function TagsScreen({ navigation }) {
       }
 
       fetched.sort((a, b) =>
-        a.name.localeCompare(b.name)
+        b.scene_count - a.scene_count   // ✅ Sort by popularity 😏🔥
       );
 
       setAllTags(fetched);
+
     } catch (err) {
       console.error(err);
       Alert.alert('Error', 'Failed to load tags');
@@ -71,7 +71,6 @@ export default function TagsScreen({ navigation }) {
     }
   };
 
-  // ✅ GLOBAL SEARCH ACROSS CACHE
   const filteredTags = useMemo(() => {
     if (!search.trim()) return allTags;
 
@@ -91,9 +90,12 @@ export default function TagsScreen({ navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" />
-      </View>
+      <ScreenLayout>
+        <AppHeader title="Tags" />
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#7c3aed" />
+        </View>
+      </ScreenLayout>
     );
   }
 
@@ -101,65 +103,91 @@ export default function TagsScreen({ navigation }) {
     <ScreenLayout>
       <AppHeader title="Tags" />
 
-      {/* ✅ Search */}
-      <TextInput
-        style={styles.search}
-        placeholder="Search tags..."
-        placeholderTextColor="#94a3b8"
-        value={search}
-        onChangeText={(text) => {
-          setSearch(text);
-          setPage(1); // ✅ RESET PAGE
-        }}
-      />
+      {/* 🔥 SEARCH */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search tags..."
+          placeholderTextColor="#71717a"
+          style={styles.searchInput}
+          value={search}
+          onChangeText={(text) => {
+            setSearch(text);
+            setPage(1);
+          }}
+        />
+      </View>
 
-      {/* ✅ Tags */}
+      {/* 🎬 TAGS */}
       <FlatList
         data={paginatedTags}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.list}
+
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.tagRow}
+            style={styles.tagCard}
+            activeOpacity={0.85}
             onPress={() =>
               navigation.navigate('TagDetail', { tag: item })
             }
           >
-            <Text style={styles.tagName}>
-              {item.name}
-            </Text>
+            {/* COUNT BADGE */}
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>
+                {item.scene_count || 0}
+              </Text>
+            </View>
+
+            {/* TAG NAME */}
+            <View style={styles.tagLabel}>
+              <Text style={styles.tagText}>
+                {item.name}
+              </Text>
+            </View>
           </TouchableOpacity>
         )}
       />
 
-      {/* ✅ Pagination */}
+      {/* 🎬 PAGINATION */}
       {totalPages > 1 && (
         <View style={styles.pagination}>
+
           <TouchableOpacity
-            style={[
-              styles.pageButton,
-              page === 1 && styles.disabledButton,
-            ]}
+            onPress={() => setPage(1)}
             disabled={page === 1}
-            onPress={() => setPage(page - 1)}
+            style={[styles.pageButton, page === 1 && styles.disabled]}
           >
-            <Text style={styles.pageText}>◀ Prev</Text>
+            <Text style={styles.pageButtonText}>First</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setPage(page - 1)}
+            disabled={page === 1}
+            style={[styles.pageButton, page === 1 && styles.disabled]}
+          >
+            <Text style={styles.pageButtonText}>Prev</Text>
           </TouchableOpacity>
 
           <Text style={styles.pageIndicator}>
-            Page {page} / {totalPages}
+            {page} / {totalPages}
           </Text>
 
           <TouchableOpacity
-            style={[
-              styles.pageButton,
-              page >= totalPages && styles.disabledButton,
-            ]}
-            disabled={page >= totalPages}
             onPress={() => setPage(page + 1)}
+            disabled={page === totalPages}
+            style={[styles.pageButton, page === totalPages && styles.disabled]}
           >
-            <Text style={styles.pageText}>Next ▶</Text>
+            <Text style={styles.pageButtonText}>Next</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setPage(totalPages)}
+            disabled={page === totalPages}
+            style={[styles.pageButton, page === totalPages && styles.disabled]}
+          >
+            <Text style={styles.pageButtonText}>Last</Text>
+          </TouchableOpacity>
+
         </View>
       )}
     </ScreenLayout>
@@ -169,62 +197,97 @@ export default function TagsScreen({ navigation }) {
 const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 12,
-    paddingBottom: 20,
+    paddingBottom: 90,
   },
 
-  tagRow: {
-    backgroundColor: '#1e293b',
-    padding: 14,
-    borderRadius: 12,
+  searchContainer: {
+    paddingHorizontal: 12,
     marginBottom: 10,
   },
 
-  tagName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#fff',
+  searchInput: {
+    height: 42,
+    borderRadius: 12,
+
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+
+    paddingHorizontal: 14,
+    color: '#ffffff',
   },
 
-  search: {
-    margin: 12,
-    backgroundColor: '#1e293b',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    color: '#fff',
+  tagCard: {
+    flexDirection: 'row',
+    borderRadius: 18,
+    overflow: 'hidden',
+    marginBottom: 10,
+
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+  },
+
+  countBadge: {
+    width: 70,
+    backgroundColor: '#5a4636',   // ✅ Cinematic brown accent
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  countText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  tagLabel: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+
+  tagText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 
   pagination: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: '#1e293b',
+
+    backgroundColor: 'rgba(20,20,30,0.95)',
+    padding: 10,
+    borderRadius: 14,
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
 
   pageButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
+    paddingHorizontal: 10,
   },
 
-  disabledButton: {
-    backgroundColor: '#94a3b8',
-  },
-
-  pageText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
+  pageButtonText: {
+    color: '#7c3aed',
+    fontSize: 13,
+    fontWeight: '600',
   },
 
   pageIndicator: {
-    fontSize: 12,
+    color: '#ffffff',
     fontWeight: '600',
-    color: '#fff',
+  },
+
+  disabled: {
+    opacity: 0.35,
   },
 
   loader: {
