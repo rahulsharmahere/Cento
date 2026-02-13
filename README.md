@@ -122,6 +122,10 @@ Issues, suggestions, and pull requests are welcome.
 
 ---
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/rahulsharmahere)
+
+---
+
 ## ⚠ Disclaimer
 
 This app is an **unofficial client** and is not affiliated with or endorsed by the Stash project.
