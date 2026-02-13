@@ -14,7 +14,7 @@ const Stack = createNativeStackNavigator();
 export default function HomeStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeMain" component={HomeScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Performers" component={PerformersScreen} />
       <Stack.Screen name="Performer" component={PerformerScreen} />
       <Stack.Screen name="Tags" component={TagsScreen} />

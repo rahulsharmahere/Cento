@@ -6,9 +6,9 @@ export default function ScreenLayout({ children }) {
   return (
     <LinearGradient
       colors={[
-        '#0b0b0f',   // Deep cinematic black
-        '#11111a',   // Slight lifted tone
-        '#0b0b0f',   // Back to black
+        '#383853',   // ✨ Lifted cinematic dark
+        '#3c3c6d',   // Premium depth tone
+        '#121224',   // Cinematic base
       ]}
       style={styles.container}
     >

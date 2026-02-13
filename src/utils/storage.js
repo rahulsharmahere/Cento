@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+
 const SERVER_KEY = 'SERVER_URL';
 const API_KEY = 'API_KEY';
 
@@ -20,4 +22,16 @@ export const getServerConfig = async () => {
 
 export const clearServerConfig = async () => {
   await AsyncStorage.multiRemove([SERVER_KEY, API_KEY]);
+};
+
+
+const BIOMETRIC_KEY = 'biometric_enabled';
+
+export const setBiometricEnabled = async (value) => {
+  await AsyncStorage.setItem(BIOMETRIC_KEY, JSON.stringify(value));
+};
+
+export const getBiometricEnabled = async () => {
+  const value = await AsyncStorage.getItem(BIOMETRIC_KEY);
+  return value ? JSON.parse(value) : false;
 };

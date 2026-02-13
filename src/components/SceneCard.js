@@ -31,18 +31,26 @@ export default function SceneCard({ scene, imageUrl, onPress, style }) {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,                     // ✅ REQUIRED for FlatList grid
-    height: 140,                 // ✅ 🔥 CRITICAL FIX (prevents collapse)
+    flex: 1,
+    height: 140,
 
     borderRadius: 14,
     overflow: 'hidden',
 
-    backgroundColor: '#15151d',  // Cinematic fallback
+    backgroundColor: '#15151d',
+
+    /* ✨ PREMIUM SHADOW */
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+
+    elevation: 8,   // ✅ Android shadow
   },
 
   image: {
     width: '100%',
-    height: '100%',              // ✅ Fill the fixed-height card
+    height: '100%',
     backgroundColor: '#222',
   },
 
@@ -53,7 +61,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 55,
 
-    backgroundColor: 'rgba(0,0,0,0.55)',  // ✅ Cinematic fade
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
 
   textContainer: {
@@ -68,7 +76,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
 
-    textShadowColor: 'rgba(0,0,0,0.9)',   // 🔥 Premium readability
+    textShadowColor: 'rgba(0,0,0,0.9)',
     textShadowRadius: 6,
   },
 });
