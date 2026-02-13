@@ -39,7 +39,7 @@ When a new release is available, the app will notify you and allow you to downlo
 
 ---
 
-## 🛡 Privacy
+## 🛡u Privacy
 
 Cento uses privacy-respecting analytics.
 
@@ -82,33 +82,10 @@ While Cento is stable for daily usage, a few minor issues are currently known:
 
 Cento is actively evolving. Planned enhancements include:
 
-### 🔐 Security & Authentication
-- Improved lock system behavior
-- Optional PIN / Pattern protection layer
-- Smarter background lock handling
-- Enhanced biometric UX
+### 🔐 Add Biometric Authentication
+### 🎬 Enhance Media Player
 
-### 🎨 UI & Experience
-- Refined glassmorphism effects
-- Smoother animations & transitions
-- Enhanced gradient themes
-- Improved visual hierarchy
-
-### 🔎 Browsing & Discovery
-- Advanced filtering options
-- Better sorting controls
-- Persistent search states
-- Faster list rendering
-
-### 🎬 Media Handling
-- Optimized thumbnail loading
-- Improved video buffering logic
-- Optional caching enhancements
-
-### ⭐ Personalization
-- Favorites / Watchlist system
-- Recently viewed tracking
-- Customizable UI preferences
+> Please Note: These feature may come very soon on app or may never come, I work on this app in my free time only. This app is stable for daily use.
 
 ---
 
