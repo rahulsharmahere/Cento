@@ -82,8 +82,10 @@ While Cento is stable for daily usage, a few minor issues are currently known:
 
 Cento is actively evolving. Planned enhancements include:
 
-### 🔐 Add Biometric Authentication
-### 🎬 Enhance Media Player
+###### Enhance Media Player
+###### Remeber last played time
+###### ~~ Add Biometric Authentication ~~ Added in build 0.3.0
+
 
 > Please Note: These feature may come very soon on app or may never come, I work on this app in my free time only. This app is stable for daily use.
 

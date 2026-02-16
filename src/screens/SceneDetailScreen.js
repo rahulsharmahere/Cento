@@ -7,9 +7,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import Video from 'react-native-video';
+import { useFocusEffect } from '@react-navigation/native';
 
 import ScreenLayout from '../components/ScreenLayout';
-import { useFocusEffect } from '@react-navigation/native';
 import AppHeader from '../components/AppHeader';
 import { graphqlRequest } from '../services/graphql';
 import { getServerConfig } from '../utils/storage';
@@ -20,24 +20,25 @@ export default function SceneDetailScreen({ route }) {
 
   const [scene, setScene] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
-  const [paused, setPaused] = useState(false);
+
+  // ✅ Start paused (CRITICAL FIX)
+  const [paused, setPaused] = useState(true);
 
   useEffect(() => {
     loadScene();
   }, []);
 
   useFocusEffect(
-  React.useCallback(() => {
-    // Screen focused → resume
-    setPaused(false);
-
-    return () => {
-      // Screen unfocused → pause
+    React.useCallback(() => {
+      // Screen focused → stay paused initially
       setPaused(true);
-    };
-  }, [])
-);
 
+      return () => {
+        // Leaving screen → pause
+        setPaused(true);
+      };
+    }, [])
+  );
 
   const loadScene = async () => {
     const { serverUrl, apiKey } = await getServerConfig();
@@ -67,23 +68,32 @@ export default function SceneDetailScreen({ route }) {
     <ScreenLayout>
       <AppHeader title="Scene" showBack />
 
-      {/* 🎬 Video Player */}
       <View style={styles.videoContainer}>
         <Video
           source={{ uri: videoUrl }}
           style={styles.video}
           controls
           resizeMode="contain"
+
+          // ✅ Playback Control
           paused={paused}
+
+          // ✅ When user presses play
+          onPlaybackStateChanged={(state) => {
+            if (state.isPlaying) {
+              setPaused(false);
+            }
+          }}
         />
       </View>
 
-      {/* 🎬 Details */}
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>{scene.title}</Text>
+        <Text style={styles.title}>
+          {scene.title || 'Untitled Scene'}
+        </Text>
 
         <View style={styles.metaContainer}>
           {scene.studio && (
@@ -107,7 +117,6 @@ export default function SceneDetailScreen({ route }) {
           </View>
         )}
 
-        {/* 🔥 Tags */}
         {scene.tags?.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Tags</Text>
@@ -124,7 +133,6 @@ export default function SceneDetailScreen({ route }) {
           </View>
         )}
 
-        {/* 🔥 Performers */}
         {scene.performers?.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Performers</Text>
@@ -136,14 +144,12 @@ export default function SceneDetailScreen({ route }) {
             ))}
           </View>
         )}
-
       </ScrollView>
     </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-
   videoContainer: {
     backgroundColor: '#000',
     borderBottomWidth: 1,
@@ -165,9 +171,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#ffffff',
-
-    textShadowColor: 'rgba(0,0,0,0.6)',
-    textShadowRadius: 6,
   },
 
   metaContainer: {
@@ -191,10 +194,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     padding: 12,
     borderRadius: 14,
-
     backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
   },
 
   description: {
@@ -226,9 +226,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     marginRight: 8,
     marginBottom: 8,
-
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
   },
 
   tagText: {
