@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BootstrapScreen from '../screens/BootstrapScreen';
 import LoginScreen from '../screens/LoginScreen';
 import MainTabs from './MainTabs';
-import SceneDetailScreen from '../screens/SceneDetailScreen';
 
 import BiometricGateScreen from '../screens/BiometricGateScreen';
 import { getBiometricEnabled } from '../utils/storage';
@@ -74,7 +73,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Bootstrap" component={BootstrapScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Main" component={MainTabs} />
-      <Stack.Screen name="SceneDetail" component={SceneDetailScreen} />
     </Stack.Navigator>
   );
 }

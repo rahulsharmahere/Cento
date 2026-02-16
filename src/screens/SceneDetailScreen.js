@@ -9,6 +9,7 @@ import {
 import Video from 'react-native-video';
 
 import ScreenLayout from '../components/ScreenLayout';
+import { useFocusEffect } from '@react-navigation/native';
 import AppHeader from '../components/AppHeader';
 import { graphqlRequest } from '../services/graphql';
 import { getServerConfig } from '../utils/storage';
@@ -19,10 +20,24 @@ export default function SceneDetailScreen({ route }) {
 
   const [scene, setScene] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     loadScene();
   }, []);
+
+  useFocusEffect(
+  React.useCallback(() => {
+    // Screen focused → resume
+    setPaused(false);
+
+    return () => {
+      // Screen unfocused → pause
+      setPaused(true);
+    };
+  }, [])
+);
+
 
   const loadScene = async () => {
     const { serverUrl, apiKey } = await getServerConfig();
@@ -59,6 +74,7 @@ export default function SceneDetailScreen({ route }) {
           style={styles.video}
           controls
           resizeMode="contain"
+          paused={paused}
         />
       </View>
 

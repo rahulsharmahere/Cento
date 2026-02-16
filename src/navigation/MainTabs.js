@@ -85,7 +85,19 @@ export default function MainTabs() {
         })}
       />
 
-      <Tab.Screen name="Scenes" component={ScenesStack} />
+      <Tab.Screen
+  name="Scenes"
+  component={ScenesStack}
+  listeners={({ navigation }) => ({
+    tabPress: e => {
+      e.preventDefault();
+
+      navigation.navigate('Scenes', {
+        screen: 'ScenesMain',
+      });
+    },
+  })}
+/>
       <Tab.Screen name="Images" component={ImagesScreen} />
       <Tab.Screen name="Studios" component={StudiosScreen} />
 

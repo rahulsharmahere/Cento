@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Text,
   Image,
-  StyleSheet,
+ StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -16,10 +16,29 @@ export default function SceneCard({ scene, imageUrl, onPress, style }) {
     >
       <Image source={{ uri: imageUrl }} style={styles.image} />
 
-      {/* 🎬 Cinematic Overlay */}
+      {/* 🔝 Top Labels */}
+      <View style={styles.topRow}>
+        {scene.studio?.name && (
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>
+              {scene.studio.name.toUpperCase()}
+            </Text>
+          </View>
+        )}
+
+        {scene.duration && (
+          <View style={styles.pill}>
+            <Text style={styles.pillText}>
+              {scene.duration}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* 🔻 Bottom Gradient Overlay */}
       <View style={styles.overlay} />
 
-      {/* 🎬 Floating Title */}
+      {/* 🎬 Title */}
       <View style={styles.textContainer}>
         <Text numberOfLines={2} style={styles.title}>
           {scene.title}
@@ -45,7 +64,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.35,
     shadowRadius: 10,
 
-    elevation: 8,   // ✅ Android shadow
+    elevation: 8,
   },
 
   image: {
@@ -54,12 +73,38 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
   },
 
+  /* 🔝 Top Labels Row */
+  topRow: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    right: 8,
+
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  /* 🎬 Pills */
+  pill: {
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+
+  pillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+
+  /* 🔻 Bottom Fade */
   overlay: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: 55,
+    height: 60,
 
     backgroundColor: 'rgba(0,0,0,0.55)',
   },

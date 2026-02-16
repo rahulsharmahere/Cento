@@ -142,8 +142,13 @@ export default function HomeScreen({ navigation }) {
                 scene={item}
                 imageUrl={`${config.serverUrl}/scene/${item.id}/screenshot?apikey=${config.apiKey}`}
                 style={{ width: CARD_WIDTH }}
+
+                /* ✅🔥 FIXED NAVIGATION */
                 onPress={(id) =>
-                  navigation.navigate('SceneDetail', { sceneId: id })
+                  navigation.navigate('Scenes', {
+                    screen: 'SceneDetail',
+                    params: { sceneId: id },
+                  })
                 }
               />
             </View>
@@ -236,8 +241,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#ffffff',
-    marginBottom: 2,  
-    textShadowColor: 'rgba(0,0,0,0.6)',   // ✅ cinematic clarity trick
+    marginBottom: 2,
+    textShadowColor: 'rgba(0,0,0,0.6)',
     textShadowRadius: 6,
   },
 
@@ -269,5 +274,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#e4e4e7',
   },
-  
+
 });

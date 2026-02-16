@@ -1,9 +1,8 @@
-// 🔹 Home dashboard – recent scenes
 export const GET_RECENT_SCENES = () => `
 {
   findScenes(
     filter: {
-      sort: "created_at"
+      sort: "updated_at"
       direction: DESC
       per_page: 6
       page: 1
@@ -12,12 +11,13 @@ export const GET_RECENT_SCENES = () => `
     scenes {
       id
       title
+      studio { name }
+      files { duration }
     }
   }
 }
 `;
 
-// 🔹 Paginated scenes list (Scenes tab + Search)
 export const GET_SCENES_PAGE = (page = 1, search = '') => `
 {
   findScenes(
@@ -29,7 +29,7 @@ export const GET_SCENES_PAGE = (page = 1, search = '') => `
     }
 
     filter: {
-      sort: "created_at"
+      sort: "updated_at"
       direction: DESC
       per_page: 20
       page: ${page}
@@ -38,13 +38,14 @@ export const GET_SCENES_PAGE = (page = 1, search = '') => `
     scenes {
       id
       title
+      studio { name }
+      files { duration }
     }
     count
   }
 }
 `;
 
-// 🔹 Scene detail
 export const GET_SCENE_DETAILS = (sceneId) => `
 {
   findScene(id: "${sceneId}") {
@@ -52,9 +53,10 @@ export const GET_SCENE_DETAILS = (sceneId) => `
     title
     date
     details
+    studio { id name }
     tags { id name }
     performers { id name }
-    studio { id name }
+    files { duration }
   }
 }
 `;
