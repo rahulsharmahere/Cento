@@ -39,7 +39,7 @@ When a new release is available, the app will notify you and allow you to downlo
 
 ---
 
-## 🛡 Privacy
+## 🛡u Privacy
 
 Cento uses privacy-respecting analytics.
 
@@ -63,6 +63,44 @@ Cento uses privacy-respecting analytics.
 
 ---
 
+---
+
+## 🐞 Current Known Issues
+
+While Cento is stable for daily usage, a few minor issues are currently known:
+
+- Some thumbnails may briefly show placeholders before loading
+- Video playback may buffer on slower network connections
+- UI performance may slightly vary on older Android devices
+- Biometric prompt behavior may depend on device security configuration
+
+> These are cosmetic or device-specific limitations and do not affect core functionality.
+
+---
+
+## 🚀 Future Updates & Improvements
+
+Cento is actively evolving. Planned enhancements include:
+
+### 🔐 Add Biometric Authentication
+### 🎬 Enhance Media Player
+
+> Please Note: These feature may come very soon on app or may never come, I work on this app in my free time only. This app is stable for daily use.
+
+---
+
+## 💡 Project Status
+
+Cento is under continuous improvement with a focus on:
+
+✔ Performance  
+✔ Visual Polish  
+✔ Stability  
+✔ Premium User Experience  
+
+---
+
+
 ## 📄 License
 
 This project is licensed under the **MIT License**.
@@ -81,6 +119,14 @@ Features and UI may change over time.
 ## 🤝 Contributing
 
 Issues, suggestions, and pull requests are welcome.
+
+---
+
+## 💕 Liked Work?
+
+Enjoying my work?? why dont you give a star to this project?? Also if you can then do consider to Buy Me A Coffee.
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/rahulsharmahere)
 
 ---
 
